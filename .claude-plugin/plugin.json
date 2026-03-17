@@ -1,0 +1,19 @@
+{
+  "name": "absorb-into-commits",
+  "version": "1.0.0",
+  "description": "Absorb uncommitted changes or fix commits into earlier commits via interactive rebase",
+  "author": {
+    "name": "roomedia"
+  },
+  "repository": "https://github.com/roomedia/absorb-into-commits",
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "rebase",
+    "absorb",
+    "squash",
+    "amend",
+    "commit-history",
+    "interactive-rebase"
+  ]
+}
