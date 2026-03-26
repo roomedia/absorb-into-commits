@@ -72,6 +72,8 @@ digraph absorb {
     "Apply changes + amend" [shape=box];
     "Conflict?" [shape=diamond];
     "Resolve + dedup" [shape=box];
+    "Message still accurate?" [shape=diamond];
+    "Amend message" [shape=box];
     "Build check" [shape=box];
     "rebase --continue" [shape=box];
     "Done?" [shape=diamond];
@@ -84,8 +86,11 @@ digraph absorb {
     "At target commit" -> "Apply changes + amend";
     "Apply changes + amend" -> "Conflict?";
     "Conflict?" -> "Resolve + dedup" [label="yes"];
-    "Conflict?" -> "Build check" [label="no"];
-    "Resolve + dedup" -> "Build check";
+    "Conflict?" -> "Message still accurate?" [label="no"];
+    "Resolve + dedup" -> "Message still accurate?";
+    "Message still accurate?" -> "Build check" [label="yes"];
+    "Message still accurate?" -> "Amend message" [label="no"];
+    "Amend message" -> "Build check";
     "Build check" -> "rebase --continue";
     "rebase --continue" -> "Done?";
     "Done?" -> "At target commit" [label="more targets"];
@@ -121,13 +126,35 @@ GIT_SEQUENCE_EDITOR="sed -i '' \
 git stash pop
 git add file1.kt file3.kt  # Only files for THIS commit
 git stash                    # Re-stash the rest
-git commit --amend --no-edit
 
 # Option B: Apply from a reference branch (safer for complex changes)
 git show <source-branch>:path/to/file > path/to/file
 git add path/to/file
-git commit --amend --no-edit
 ```
+
+**Commit message decision:** After staging, check if the absorbed changes alter the commit's intent or scope.
+
+```bash
+# Review what this commit will contain after amend
+git diff --cached --stat
+git log -1 --format="%B"  # Current commit message
+
+# If the message still accurately describes the commit:
+git commit --amend --no-edit
+
+# If the absorbed changes alter the commit's scope or meaning:
+git commit --amend -m "updated message reflecting the new content"
+```
+
+When to update the message:
+- New functionality added that the original message doesn't cover
+- Bug fix changes the behavior described in the message
+- File/class renamed but message references old name
+- Scope of the commit expanded (e.g., "fix A" → "fix A and B")
+
+When `--no-edit` is fine:
+- Typo fix, formatting, or style change only
+- Implementation detail changed but behavior/intent unchanged
 
 ### Step 4: Handle conflicts
 

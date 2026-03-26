@@ -1,6 +1,6 @@
 {
   "name": "absorb-into-commits",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Absorb uncommitted changes or fix commits into earlier commits via interactive rebase",
   "author": {
     "name": "roomedia"
